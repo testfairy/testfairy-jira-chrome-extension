@@ -30,6 +30,11 @@ function addTestfairyIFrame() {
 	}
 
 	var url = testfairyDescriptionBlock.getAttribute("href");
+	if (!url.includes("projects") || !url.includes("builds") || !url.includes("sessions")) {
+
+		return false;
+	}
+	
 	url = url.substring(0, url.indexOf('#')) + "?iframe";
 
 
