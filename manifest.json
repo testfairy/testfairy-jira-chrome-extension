@@ -4,13 +4,19 @@
   "name": "TestFairy for JIRA extension",
   "description": "",
   "version": "1.0",
-  "background": {
-    "scripts": ["background.js"]
-  },
   "permissions": [
-    "activeTab",
-    "webNavigation",
-    "http://*",
-    "https://*"
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "document_end" : "document_end",
+      "js": [
+        "background.js"
+      ]
+    }
   ]
 }
