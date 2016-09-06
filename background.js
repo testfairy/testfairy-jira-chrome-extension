@@ -2,9 +2,8 @@ chrome.extension.sendMessage({}, function(response) {
 
 	if (document.readyState === "interactive" && isJiraTab() ) {
 		
-		// ruToSucses(addTestfairyIFrame);
 		if (addTestfairyIFrame() == false) {
-			setTimeout(addTestfairyIFrame ,5000);
+			setTimeout(addTestfairyIFrame, 5000);
 		}
 
 	}
@@ -12,10 +11,9 @@ chrome.extension.sendMessage({}, function(response) {
 
 function addTestfairyIFrame() {
 
-console.log("addTestfairyIFrame ---- ");
 
 	// Todo remove debug 
-	var a  = document.querySelector("#testfairy-session__testfairy-session-web-panel")
+	var a  = document.querySelector("#testfairy-session__testfairy-session-web-panel");
 	if (a != null ){
 		a.style.display = 'none';
 	}
@@ -23,15 +21,14 @@ console.log("addTestfairyIFrame ---- ");
 
 	var detailsModule = document.querySelector("#details-module");
 	if (detailsModule == null) {
-		console.log("detailsModule not found ---- ");
 		return false;
 	}
 
 	var testfairyDescriptionBlock document.querySelector("#descriptionmodule .mod-content .user-content-block a");
 	if (testfairyDescriptionBlock == null) {
-		return;
+		return false;
 	}
-	
+
 	var url = testfairyDescriptionBlock.getAttribute("href");
 	url = url.substring(0, url.indexOf('#')) + "?iframe";
 
