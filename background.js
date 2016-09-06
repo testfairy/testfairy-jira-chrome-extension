@@ -24,7 +24,7 @@ function addTestfairyIFrame() {
 		return false;
 	}
 
-	var testfairyDescriptionBlock document.querySelector("#descriptionmodule .mod-content .user-content-block a");
+	var testfairyDescriptionBlock = document.querySelector("#descriptionmodule .mod-content .user-content-block a");
 	if (testfairyDescriptionBlock == null) {
 		return false;
 	}
@@ -40,7 +40,7 @@ function addTestfairyIFrame() {
 	parent.appendChild(heading);
 	var h2 = document.createElement('h2');
 	h2.setAttribute("class", "toggle-title");
-	h2.textContent = "TestFairy - chrome extension";
+	h2.textContent = "TestFairy information";
 	heading.appendChild(h2);
 	var content = document.createElement('div');
 	content.setAttribute("class", "mod-content");
