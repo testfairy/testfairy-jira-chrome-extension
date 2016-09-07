@@ -1,6 +1,8 @@
 chrome.extension.sendMessage({}, function(response) {
 
 	if (document.readyState === "interactive" && isJiraTab() ) {
+
+		window.addEventListener("message", receiveMessage, false);
 		
 		if (addTestfairyIFrame() == false) {
 			setTimeout(addTestfairyIFrame, 5000);
@@ -9,15 +11,23 @@ chrome.extension.sendMessage({}, function(response) {
 	}
 });
 
-function addTestfairyIFrame() {
+function receiveMessage(event) {
+				
+	var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
+	
+	if(event.data.height) {
+		document.getElementById('testfairy-iframe').height = (event.data.height) + "px";
+	}
+}
 
+function addTestfairyIFrame() {
 
 	// Todo remove debug 
 	var a  = document.querySelector("#testfairy-session__testfairy-session-web-panel");
-	if (a != null ){
-		a.style.display = 'none';
+	if (a != null ) {
+		//testfairy jira ad-on found
+		return true;
 	}
-	
 
 	var detailsModule = document.querySelector("#details-module");
 	if (detailsModule == null) {
@@ -51,9 +61,10 @@ function addTestfairyIFrame() {
 	content.setAttribute("class", "mod-content");
 	parent.appendChild(content);
 	var iframe = document.createElement('iframe');
+	iframe.setAttribute('id', 'testfairy-iframe');
 	iframe.setAttribute('frameborder', '0');
 	iframe.setAttribute('width', '100%');
-	iframe.setAttribute('height', '918px');
+	iframe.setAttribute('height', 'auto');
 	iframe.setAttribute('src', url);
 	content.appendChild(iframe);
 

@@ -16,7 +16,6 @@
         "http://*/*",
         "https://*/*"
       ],
-      "document_end" : "document_end",
       "js": [
         "background.js"
       ]
