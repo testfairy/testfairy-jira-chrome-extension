@@ -45,8 +45,12 @@ function addTestfairyIFrame() {
 		return false;
 	}
 	
-	url = url.substring(0, url.indexOf('#')) + "?iframe";
+	if (url.includes('#')) {
 
+		url = url.substring(0, url.indexOf('#'));	
+	}
+	
+	url = url + "?iframe";
 
 	var parent = document.createElement('div');
 	parent.setAttribute("class", "module toggle-wrap");
