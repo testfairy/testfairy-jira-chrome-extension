@@ -2,8 +2,9 @@
 
 ## Installation:
 
-1. Download the [latest release](https://github.com/testfairy/testfairy-jira-chrome-extension/releases/latest) of testfairy-jira-chrome-extension.crx
-2. Open Chrome Extensions via Settings -> Extensions or simply go to chrome://extensions
-3. Drag And drop the crx file on the extensions list.
+1. Visit the [Atlassian Marketplace](https://marketplace.atlassian.com/plugins/com.testfairy.jira.chrome/cloud/overview)
+2. Click on "Get It Now" and choose your installation.
+
+No admin priviliges required.
 
 
