@@ -1,9 +1,19 @@
 chrome.extension.sendMessage({}, function(response) {
-	if ((document.readyState === "interactive" || document.readyState === "complete") && isJiraTab()) {
-		window.addEventListener("message", receiveMessage, false);
-		if (!addTestfairyIFrame()) {
-			setTimeout(addTestfairyIFrame, 5000);
+	if ((document.readyState === "interactive" || document.readyState === "complete")) {
+		if (isJiraTab()) {
+			window.addEventListener("message", receiveMessage, false);
+			if (!addTestFairyIFrame()) {
+				setTimeout(addTestFairyIFrame, 5000);
+			}
 		}
+
+		if (isZendeskTab()) {
+			window.addEventListener("message", receiveMessage, false);
+			if (!addTestFairyZendeskIFrame()) {
+				setTimeout(addTestFairyZendeskIFrame, 5000);
+			}
+		}
+
 	}
 });
 
@@ -14,8 +24,42 @@ function receiveMessage(event) {
 	}
 }
 
-function addTestfairyIFrame() {
+function addTestFairyZendeskIFrame() {
+	var testfairyDescriptionBlock = document.querySelectorAll(".content .body a")
 
+	if (testfairyDescriptionBlock == null || testfairyDescriptionBlock.length == 0) {
+		return false;
+	}
+
+	var testFairyUrls = [];
+	for (let i = 0; i < testfairyDescriptionBlock.length; i++) {
+		let anchor = testfairyDescriptionBlock[i];
+		var url = anchor.getAttribute("href");
+		if (url.includes("projects") && url.includes("builds") && url.includes("sessions")) {
+			testFairyUrls.push(anchor);
+		}
+	}
+
+	if (testFairyUrls.length == 0) {
+		return false;
+	}
+
+	var testfairyLink = testFairyUrls[0];
+	var url = testfairyLink.getAttribute("href");
+	if (url.includes('#')) {
+		url = url.substring(0, url.indexOf('#'));
+	}
+
+	url = url + "?iframe";
+
+	var detailsModule = testfairyLink.closest(".comment");
+	var parent = createIFrame(url);
+
+	insertAfter(parent, detailsModule);
+	return true;
+}
+
+function addTestFairyIFrame() {
 	// Todo remove debug
 	var a  = document.querySelector("#testfairy-session__testfairy-session-web-panel");
 	if (a != null) {
@@ -53,28 +97,38 @@ function addTestfairyIFrame() {
 		return false;
 	}
 
-	var parent = document.createElement('div');
-	parent.setAttribute("class", "module toggle-wrap");
-	var heading = document.createElement('div');
-	heading.setAttribute("class", "mod-header");
-	parent.appendChild(heading);
+	var parent = createIFrame(url);
+
+	insertAfter(parent, detailsModule);
+	return true;
+}
+
+function createIFrame(url) {
 	var h2 = document.createElement('h2');
 	h2.setAttribute("class", "toggle-title");
 	h2.textContent = "TestFairy information";
+
+	var heading = document.createElement('div');
+	heading.setAttribute("class", "mod-header");
 	heading.appendChild(h2);
-	var content = document.createElement('div');
-	content.setAttribute("class", "mod-content");
-	parent.appendChild(content);
+
 	var iframe = document.createElement('iframe');
 	iframe.setAttribute('id', 'testfairy-iframe');
 	iframe.setAttribute('frameborder', '0');
 	iframe.setAttribute('width', '100%');
 	iframe.setAttribute('height', 'auto');
 	iframe.setAttribute('src', url);
+
+	var content = document.createElement('div');
+	content.setAttribute("class", "mod-content");
 	content.appendChild(iframe);
 
-	insertAfter(parent, detailsModule);
-	return true;
+	var parent = document.createElement('div');
+	parent.setAttribute("class", "module toggle-wrap");
+	parent.appendChild(heading);
+	parent.appendChild(content);
+
+	return parent;
 }
 
 function insertAfter(elem, refElem) {
@@ -87,6 +141,20 @@ function isJiraTab() {
 	for (var i = 0; i < metaTags.length; i++) {
 		if (metaTags[i].getAttribute('name') == 'application-name' && metaTags[i].getAttribute('content') == 'JIRA' && metaTags[i].getAttribute('data-name') == 'jira') {
 			return true;
+		}
+	}
+
+	return false;
+}
+
+function isZendeskTab() {
+	var metaTags = document.getElementsByTagName("meta");
+	for (var i = 0; i < metaTags.length; i++) {
+		var tag = metaTags[i];
+		if (tag.getAttribute('name') == 'author' && tag.getAttribute('content')) {
+			if (tag.getAttribute('content').toLowerCase().indexOf("zendesk") >= 0) {
+				return true;
+			}
 		}
 	}
 
