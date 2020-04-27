@@ -1,21 +1,30 @@
 chrome.extension.sendMessage({}, function(response) {
 	if ((document.readyState === "interactive" || document.readyState === "complete")) {
-		if (isJiraTab()) {
+		if (isJiraTab() || isZendeskTab()) {
+			addTimer();
 			window.addEventListener("message", receiveMessage, false);
-			if (!addTestFairyIFrame()) {
-				setTimeout(addTestFairyIFrame, 5000);
-			}
 		}
-
-		if (isZendeskTab()) {
-			window.addEventListener("message", receiveMessage, false);
-			if (!addTestFairyZendeskIFrame()) {
-				setTimeout(addTestFairyZendeskIFrame, 5000);
-			}
-		}
-
 	}
 });
+
+function addTimer() {
+	if (isJiraTab() || isZendeskTab()) {
+		setTimeout(addTimer, 5000);
+	}
+
+	var testFairyFrame = document.querySelector("#testfairy-iframe");
+	if (testFairyFrame) {
+		return;
+	}
+
+	if (isJiraTab()) {
+		addTestFairyIFrame();
+	}
+
+	if (isZendeskTab()) {
+		addTestFairyZendeskIFrame();
+	}
+}
 
 function receiveMessage(event) {
 	var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
