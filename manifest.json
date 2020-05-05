@@ -20,5 +20,10 @@
         "background.js"
       ]
     }
-  ]
+  ],
+  "applications": {
+    "gecko": {
+      "id": "support@testfairy.com"
+    }
+  }
 }

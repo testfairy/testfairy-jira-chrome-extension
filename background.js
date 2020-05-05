@@ -1,14 +1,26 @@
-chrome.extension.sendMessage({}, function(response) {
+function loadExtension() {
 	if ((document.readyState === "interactive" || document.readyState === "complete")) {
+		console.error('Diego');
+
 		if (isJiraTab() || isZendeskTab() || isAWSDeviceFarmTab()) {
 			addTimer();
 			window.addEventListener("message", receiveMessage, false);
 		}
 	}
-});
+}
+
+if (chrome && chrome.extension && chrome.extension.sendMessage) {
+	chrome.extension.sendMessage({}, loadExtension); // Chrome
+} else if (browser && browser.runtime && browser.runtime.sendMessage) {
+	browser.runtime.sendMessage({}).then(loadExtension).catch(loadExtension); // Firefox (WebExtensions)
+} else {
+	throw new Error('TestFairy extension does not support this browser!');
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 function addTimer() {
-	console.log("addTimer");
+	console.error("addTimer");
 
 	if (isJiraTab() || isZendeskTab() || isAWSDeviceFarmTab()) {
 		setTimeout(addTimer, 5000);
@@ -207,7 +219,7 @@ function isAWSDeviceFarmTab() {
 
 		var found = deviceFarmPathFound && userLoggedIn && userIdVisible;
 
-		// console.log("Found: " + found);
+		// console.error("Found: " + found);
 
 		return found;
 	} catch (error) {
@@ -218,14 +230,14 @@ function isAWSDeviceFarmTab() {
 
 function addTestFairyAWSDeviceFarmIFrame() {
 	var logsAvailable = document.querySelectorAll("#logs-header").length === 1;
-	var detailsSection = document.querySelectorAll("#logs-header")[0].parentNode.parentNode.parentNode;
+	var detailsSection = document.querySelectorAll("#logs-header")[0].parentElement.parentElement.parentElement;
 
-	console.log('Log available: ' + logsAvailable);
-	console.log('Details section: ');
-	console.log(detailsSection);
+	console.error('Log available: ' + logsAvailable);
+	console.error('Details section: ');
+	console.error(detailsSection);
 
 	var sectionCssClass = 'results-report-section';
-	
+
 
 	return false;
 }
