@@ -1,6 +1,6 @@
 chrome.extension.sendMessage({}, function(response) {
 	if ((document.readyState === "interactive" || document.readyState === "complete")) {
-		if (isJiraTab() || isZendeskTab()) {
+		if (isJiraTab() || isZendeskTab() || isAWSDeviceFarmTab()) {
 			addTimer();
 			window.addEventListener("message", receiveMessage, false);
 		}
@@ -8,7 +8,9 @@ chrome.extension.sendMessage({}, function(response) {
 });
 
 function addTimer() {
-	if (isJiraTab() || isZendeskTab()) {
+	console.log("addTimer");
+
+	if (isJiraTab() || isZendeskTab() || isAWSDeviceFarmTab()) {
 		setTimeout(addTimer, 5000);
 	}
 
@@ -23,6 +25,11 @@ function addTimer() {
 
 	if (isZendeskTab()) {
 		addTestFairyZendeskIFrame();
+	}
+
+	if (isAWSDeviceFarmTab()) {
+		addTestFairyAWSDeviceFarmIFrame();
+		addTestFairyInstrumentationLinksIfFound();
 	}
 }
 
@@ -167,5 +174,62 @@ function isZendeskTab() {
 		}
 	}
 
+	return false;
+}
+
+function isAWSDeviceFarmTab() {
+	try {
+		var metaTags = document.getElementsByTagName("meta");
+
+		var deviceFarmPathFound = window.location.pathname === "/devicefarm/home";
+		var userLoggedIn = false;
+		var userIdVisible = false;
+
+		for (var i = 0; i < metaTags.length; i++) {
+			var tag = metaTags[i];
+
+			if (
+				tag.getAttribute('name') === 'adf-user-fullName' &&
+				tag.getAttribute('content').length > 0
+			) {
+				userLoggedIn = true;
+			}
+
+			if (
+				tag.getAttribute('name') === 'adf-user-accountId' &&
+				tag.getAttribute('content').length > 0 &&
+				!isNaN(parseInt(tag.getAttribute('content'))) &&
+				parseInt(tag.getAttribute('content')) > 0
+			) {
+				userIdVisible = true;
+			}
+		}
+
+		var found = deviceFarmPathFound && userLoggedIn && userIdVisible;
+
+		// console.log("Found: " + found);
+
+		return found;
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
+}
+
+function addTestFairyAWSDeviceFarmIFrame() {
+	var logsAvailable = document.querySelectorAll("#logs-header").length === 1;
+	var detailsSection = document.querySelectorAll("#logs-header")[0].parentNode.parentNode.parentNode;
+
+	console.log('Log available: ' + logsAvailable);
+	console.log('Details section: ');
+	console.log(detailsSection);
+
+	var sectionCssClass = 'results-report-section';
+	
+
+	return false;
+}
+
+function addTestFairyInstrumentationLinksIfFound() {
 	return false;
 }
