@@ -1,4 +1,10 @@
+var deviceFarmBusy = 0;
+
 function isDeviceFarmTab() {
+	if (deviceFarmBusy) {
+		return;
+	}
+
 	try {
 		var metaTags = document.getElementsByTagName("meta");
 
@@ -38,6 +44,10 @@ function isDeviceFarmTab() {
 }
 
 function addTestFairyDeviceFarmIFrame() {
+	if (deviceFarmBusy) {
+		return;
+	}
+
 	var logsHeader = document.querySelector("#logs-header");
 	if (!logsHeader) {
 		return;
@@ -57,21 +67,32 @@ function addTestFairyDeviceFarmIFrame() {
 		}
 	});
 
-	console.error('Found Sections:')
-	console.error(foundSections);
+	// console.error('Found Sections:');
+	// console.error(foundSections);
 
 	var testCases = extractTestCases(foundSections.filesSection);
 
-	// TODO : Convert this to async forEach
-	var sessions = extractSessionUrl(testCases[0].testFilesSection);
-
-	console.error('Test Cases:')
+	console.error('Test Cases:');
 	console.error(testCases);
 
-	console.error('Sessions:')
-	console.error(sessions);
+	if (testCases.length <= 2) {
+		return;
+	}
 
-	return false;
+	deviceFarmBusy = testCases.length;
+	testCases.forEach(function(testCase) {
+		extractSessionUrl(testCase.testFilesSection, function(sessionUrl) {
+			if (sessionUrl) {
+				console.error("Session url: " + sessionUrl);
+			} else {
+				console.error("Session url is empty");
+			}
+
+			deviceFarmBusy--;
+		});
+	});
+
+	return;
 }
 
 function extractTestCases(filesSection) {
@@ -80,54 +101,79 @@ function extractTestCases(filesSection) {
 	}
 
 	var testCases = [];
-	var testCaseSections = filesSection.querySelectorAll('.adf-card');
+	var testCaseSections = filesSection.querySelectorAll('.adf-card > div');
+
+	console.error(testCaseSections);
 
 	testCaseSections.forEach(function(section) {
 		var testSuiteNameHeader = section.querySelector("h5:first-child");
-		var testNameHeader = section.parentElement.querySelector(".results-report-files h6:first-child");
-		var testFiles = section.parentElement.querySelector(".results-report-files > ul");
+		var testNameHeader = section.querySelectorAll(".results-report-files h6:first-child");
+		var testFiles = section.querySelectorAll(".results-report-files > ul");
 
-		testCases.push({
-			testSuiteName: testSuiteNameHeader.innerText,
-			testName: testNameHeader.innerText,
-			testFilesSection: testFiles
-		});
+		if (testFiles.length == testNameHeader.length) {
+			for (var i = 0; i < testNameHeader.length; i++) {
+				var name = testNameHeader[i];
+				var files = testFiles[i];
+
+				testCases.push({
+					testSuiteName: testSuiteNameHeader.innerText,
+					testName: name.innerText,
+					testFilesSection: files
+				});
+			}
+		}
 	});
 
 	return testCases;
 }
 
-function extractSessionUrl(testFilesSection) {
+function extractSessionUrl(testFilesSection, callback) {
 	if (!testFilesSection) {
+		callback();
 		return;
 	}
 
-	console.error("Test Files Section:");
-	console.error(testFilesSection);
+	// console.error("Test Files Section:");
+	// console.error(testFilesSection);
 
 	var logcat = Array.prototype.slice.call(testFilesSection.querySelectorAll('li > a'))
 	  .filter(function (a) {
 	    return a.textContent === 'Logcat';
 	  })[0];
 
-	console.error("Logcat:");
-	console.error(logcat);
+	// console.error("Logcat:");
+	// console.error(logcat);
 
 	if (!logcat) {
+		callback();
 		return;
 	}
 
-	console.error("Logcat Url:");
-	console.log(logcat.href);
+	// console.error("Logcat Url:");
+	// console.log(logcat.href);
 
 	httpGetAsync(logcat.href, function(logs) {
-		console.error(logs);
-		// TODO : Traverse file to extract session url
+		// console.error("Fetched logcat file");
+
+		if (!logs) {
+			// console.error("Logcat is empty");
+			callback();
+			return;
+		}
+
+		var lines = logs.split('\n');
+
+		for (var i = 0; i < lines.length; i++) {
+			var line = lines[i];
+
+			var instrumentationUrlLine = 'Instrumentation session url: ';
+			if (line.indexOf(instrumentationUrlLine) != -1) {
+				// console.error("Found line: " + line);
+				callback(line.replace(instrumentationUrlLine, ''));
+				return;
+			}
+		}
+
+		callback();
 	});
-
-	return "";
-}
-
-function addTestFairyInstrumentationLinksIfFound() {
-	return false;
 }

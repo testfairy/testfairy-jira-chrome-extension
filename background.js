@@ -19,12 +19,14 @@ function receiveMessage(event) {
 }
 
 function addTimer() {
+	var canProceed = true;
+
 	if (isSupported()) {
 		setTimeout(addTimer, 5000);
 	}
 
 	var testFairyFrame = document.querySelector("#testfairy-iframe");
-	if (testFairyFrame) {
+	if (testFairyFrame || !canProceed) {
 		return;
 	}
 
@@ -38,7 +40,6 @@ function addTimer() {
 
 	if (isDeviceFarmTab()) {
 		addTestFairyDeviceFarmIFrame();
-		addTestFairyInstrumentationLinksIfFound();
 	}
 }
 

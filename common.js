@@ -36,8 +36,8 @@ function httpGetAsync(theUrl, callback)
 
 		xmlHttp.onreadystatechange = function() {
       if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-        callback(xmlHttp.responseText);
-			} else {
+        callback(xmlHttp.responseText.toString());
+			} else if (xmlHttp.readyState == 4) {
 				callback();
 			}
     }
