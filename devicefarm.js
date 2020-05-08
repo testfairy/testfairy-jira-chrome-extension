@@ -1,4 +1,8 @@
+// atomic counter for pending ajax calls, used to block periodic timer for extension racing with existing uncomplete processing
 var deviceFarmBusy = 0;
+
+// string set for already checked session, used to avoid injecting html elements twice for a test case
+var alreadyCheckedSessions = {};
 
 function isDeviceFarmTab() {
 	if (deviceFarmBusy) {
@@ -32,11 +36,7 @@ function isDeviceFarmTab() {
 			}
 		}
 
-		var found = deviceFarmPathFound && userLoggedIn && userIdVisible;
-
-		// console.error("Found: " + found);
-
-		return found;
+		return deviceFarmPathFound && userLoggedIn && userIdVisible;
 	} catch (error) {
 		console.error(error);
 		return false;
@@ -45,11 +45,13 @@ function isDeviceFarmTab() {
 
 function addTestFairyDeviceFarmIFrame() {
 	if (deviceFarmBusy) {
+		// there is an ongoing processing being done, skip this call and give more time for the previous attempt
 		return;
 	}
 
 	var logsHeader = document.querySelector("#logs-header");
 	if (!logsHeader) {
+		// if device farm didn't record logcat, we can't do anything
 		return;
 	}
 
@@ -67,27 +69,31 @@ function addTestFairyDeviceFarmIFrame() {
 		}
 	});
 
-	// console.error('Found Sections:');
-	// console.error(foundSections);
-
 	var testCases = extractTestCases(foundSections.filesSection);
 
-	console.error('Test Cases:');
-	console.error(testCases);
-
-	if (testCases.length <= 2) {
-		return;
-	}
+	// console.error('Test Cases:');
+	// console.error(testCases);
 
 	deviceFarmBusy = testCases.length;
 	testCases.forEach(function(testCase) {
+		/*
+		Structure of `testCase`:
+
+		{
+			testSuiteName: string
+			testName: string,
+			testFilesSection: DOMElement of <ul></ul> of <a></a> elements
+		}
+		*/
 		extractSessionUrl(testCase.testFilesSection, function(sessionUrl) {
-			if (sessionUrl) {
-				console.error("Session url: " + sessionUrl);
-			} else {
-				console.error("Session url is empty");
+			var testCanonicalName = testCase.testSuiteName + "." + testCase.testName;
+
+			if (sessionUrl && !alreadyCheckedSessions[testCanonicalName]) {
+				console.error("Session url for " + testCanonicalName + ": " + sessionUrl);
+				addSessionLinkToSection(testCase, sessionUrl);
 			}
 
+			alreadyCheckedSessions[testCanonicalName] = true;
 			deviceFarmBusy--;
 		});
 	});
@@ -103,24 +109,59 @@ function extractTestCases(filesSection) {
 	var testCases = [];
 	var testCaseSections = filesSection.querySelectorAll('.adf-card > div');
 
-	console.error(testCaseSections);
-
 	testCaseSections.forEach(function(section) {
-		var testSuiteNameHeader = section.querySelector("h5:first-child");
-		var testNameHeader = section.querySelectorAll(".results-report-files h6:first-child");
-		var testFiles = section.querySelectorAll(".results-report-files > ul");
+		// Device Farm has 3 types of details pages:
+		//
+		// 1. Instrumentation page (has links to test suites)
+		// 2. Single test suite page (has links to test cases)
+		// 3. Single test case page (has a single link to test output files)
+		//
+		// This section parser can handle all three cases by checking the selectors below
+		var testSuiteNameHeader = section.querySelector("h5:first-child");  // if this is null, we are in single test suite details page
+		var testNameHeader = section.querySelectorAll(".results-report-files h6:first-child"); // if this is null, we are in single test suite's single case results page
+		var testFiles = section.querySelectorAll(".results-report-files > ul"); // this is always non-empty otherwise we die
 
-		if (testFiles.length == testNameHeader.length) {
-			for (var i = 0; i < testNameHeader.length; i++) {
-				var name = testNameHeader[i];
-				var files = testFiles[i];
+		if (testFiles.length === 0) {
+			return;
+		}
 
-				testCases.push({
-					testSuiteName: testSuiteNameHeader.innerText,
-					testName: name.innerText,
-					testFilesSection: files
-				});
+		for (var i = 0; i < testNameHeader.length; i++) {
+			var name = testNameHeader[i];
+			var files = testFiles[i];
+
+			/*
+			Structure of `testCase`:
+
+			{
+				testSuiteName: string
+				testName: string,
+				testFilesSection: DOMElement of <ul></ul> of <a></a> elements
 			}
+			*/
+			testCases.push({
+				testSuiteName: testSuiteNameHeader ? testSuiteNameHeader.innerText : '',
+				testName: name ? name.innerText : '',
+				testFilesSection: files
+			});
+		}
+
+		if (!testSuiteNameHeader && testNameHeader.length === 0 && testFiles.length === 1) {
+			// we are in single test suite's single case results page
+
+			/*
+			Structure of `testCase`:
+
+			{
+				testSuiteName: string
+				testName: string,
+				testFilesSection: DOMElement of <ul></ul> of <a></a> elements
+			}
+			*/
+			testCases.push({
+				testSuiteName: '',
+				testName: '',
+				testFilesSection: testFiles[0]
+			});
 		}
 	});
 
@@ -133,47 +174,74 @@ function extractSessionUrl(testFilesSection, callback) {
 		return;
 	}
 
-	// console.error("Test Files Section:");
-	// console.error(testFilesSection);
-
 	var logcat = Array.prototype.slice.call(testFilesSection.querySelectorAll('li > a'))
 	  .filter(function (a) {
 	    return a.textContent === 'Logcat';
 	  })[0];
 
-	// console.error("Logcat:");
-	// console.error(logcat);
-
 	if (!logcat) {
+		// if device farm didn't record logcat, we can't do anything
 		callback();
 		return;
 	}
 
-	// console.error("Logcat Url:");
-	// console.log(logcat.href);
+	var testFairySession = Array.prototype.slice.call(testFilesSection.querySelectorAll('li > a'))
+	  .filter(function (a) {
+	    return a.textContent === 'TestFairy Session';
+	  })[0];
 
+	if (testFairySession) {
+		// if we already injected a <a>TestFairy Session</a>, we can skip
+		callback();
+		return;
+	}
+
+	// Fetch and parse logcat to detect session urls
 	httpGetAsync(logcat.href, function(logs) {
 		// console.error("Fetched logcat file");
 
 		if (!logs) {
 			// console.error("Logcat is empty");
+			// if logcat file is empty or unavailable, there is no hope
 			callback();
 			return;
 		}
 
 		var lines = logs.split('\n');
-
 		for (var i = 0; i < lines.length; i++) {
 			var line = lines[i];
 
+			// This line must match with these:
+			// https://github.com/testfairy-blog/TestFairyInstrumentationExamples/blob/master/app/src/androidTest/java/com/testfairy/instrumentation/utils/TestFairyInstrumentationUtil.java#L139
+			// https://github.com/testfairy-blog/TestFairyInstrumentationExamples/blob/master/app/src/androidTest/java/com/testfairy/instrumentation/utils/TestFairyInstrumentationUtil.java#L151
 			var instrumentationUrlLine = 'Instrumentation session url: ';
-			if (line.indexOf(instrumentationUrlLine) != -1) {
+
+			var instrumentationUrlLineIndex = line.indexOf(instrumentationUrlLine);
+			if (instrumentationUrlLineIndex != -1) {
 				// console.error("Found line: " + line);
-				callback(line.replace(instrumentationUrlLine, ''));
+				var sessionUrl = line.slice(instrumentationUrlLineIndex + instrumentationUrlLine.length).trim();
+				callback(sessionUrl);
 				return;
 			}
 		}
 
 		callback();
 	});
+}
+
+function addSessionLinkToSection(testCase, sessionUrl) {
+	/*
+	Structure of `testCase`:
+
+	{
+		testSuiteName: string
+		testName: string,
+		testFilesSection: DOMElement of <ul></ul> of <a></a> elements
+	}
+	*/
+	var testCanonicalName = testCase.testSuiteName + "." + testCase.testName;
+	console.error("Injecting TestFairy Session url into files section for " + testCanonicalName);
+
+	testCase.testFilesSection.appendChild(createLi(createA("TestFairy Session", sessionUrl)))
+	testCase.testFilesSection.appendChild(createLi(createIFrame(sessionUrl + "?iframe", '100%', 'auto', 'scroll')));
 }

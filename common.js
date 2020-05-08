@@ -1,4 +1,4 @@
-function createIFrame(url) {
+function createIFrame(url, width, height, overflow) {
 	var h2 = document.createElement('h2');
 	h2.setAttribute("class", "toggle-title");
 	h2.textContent = "TestFairy information";
@@ -10,9 +10,13 @@ function createIFrame(url) {
 	var iframe = document.createElement('iframe');
 	iframe.setAttribute('id', 'testfairy-iframe');
 	iframe.setAttribute('frameborder', '0');
-	iframe.setAttribute('width', '100%');
-	iframe.setAttribute('height', 'auto');
+	iframe.setAttribute('width', width ? width : '100%');
+	iframe.setAttribute('height', height ? height : 'auto');
 	iframe.setAttribute('src', url);
+
+	if (overflow) {
+		iframe.setAttribute('style', 'overflow: ' + overflow);
+	}
 
 	var content = document.createElement('div');
 	content.setAttribute("class", "mod-content");
@@ -26,22 +30,36 @@ function createIFrame(url) {
 	return parent;
 }
 
-function insertAfter(elem, refElem) {
-    return refElem.parentNode.insertBefore(elem, refElem.nextSibling);
+function createA(text, url) {
+	var a = document.createElement('a');
+	a.href = url;
+	a.innerText = text;
+	a.setAttribute('target', '_blank');
+
+	return a;
 }
 
-function httpGetAsync(theUrl, callback)
-{
-    var xmlHttp = new XMLHttpRequest();
+function createLi(child) {
+	var li = document.createElement('li');
+	li.appendChild(child);
 
-		xmlHttp.onreadystatechange = function() {
-      if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-        callback(xmlHttp.responseText.toString());
-			} else if (xmlHttp.readyState == 4) {
-				callback();
-			}
-    }
+	return li;
+}
 
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous
-    xmlHttp.send(null);
+function insertAfter(elem, refElem) {
+  return refElem.parentNode.insertBefore(elem, refElem.nextSibling);
+}
+
+function httpGetAsync(theUrl, callback) {
+  var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() {
+    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+      callback(xmlHttp.responseText.toString());
+		} else if (xmlHttp.readyState == 4) {
+			callback();
+		}
+  }
+
+  xmlHttp.open("GET", theUrl, true); // true for asynchronous
+  xmlHttp.send(null);
 }

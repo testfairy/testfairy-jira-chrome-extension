@@ -19,14 +19,13 @@ function receiveMessage(event) {
 }
 
 function addTimer() {
-	var canProceed = true;
-
 	if (isSupported()) {
 		setTimeout(addTimer, 5000);
 	}
 
 	var testFairyFrame = document.querySelector("#testfairy-iframe");
-	if (testFairyFrame || !canProceed) {
+	if ((isJiraTab() || isZendeskTab()) && testFairyFrame) {
+		// No need to load extension twice for Jira and Zendesk if iframe already exists
 		return;
 	}
 
