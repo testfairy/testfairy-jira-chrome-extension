@@ -46,6 +46,68 @@ function createLi(child) {
 	return li;
 }
 
+function injectModal() { // Assumes bootstrap exists
+	function show() {
+		document.querySelector('#testfairy-modal').style.display = "block";
+	}
+
+	function hide() {
+		document.querySelector('#testfairy-modal').style.display = "none";
+	}
+
+	function clear() {
+		document.querySelector('#testfairy-modal .row .column').innerText = '';
+	}
+
+	function addContent(content) {
+		document.querySelector('#testfairy-modal .row .column').appendChild(content);
+	}
+
+	var modal = document.querySelector('#testfairy-modal')
+	if (modal) {
+		return { element: modal, show: show, hide: hide, clear: clear, addContent:addContent };
+	}
+
+	modal = document.createElement('div');
+	modal.setAttribute('id', 'testfairy-modal');
+	modal.setAttribute('class', 'container');
+	modal.style.position = 'fixed';
+	modal.style.display = 'none';
+	modal.style.width = '100%';
+	modal.style.minHeight = '100%';
+	modal.style.top = '0';
+	modal.style.left = '0';
+	modal.style.right = '0';
+	modal.style.bottom = '0';
+	modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+	modal.style.zIndex = '100';
+	modal.style.cursor = 'pointer';
+	modal.style.marginLeft = '0';
+	modal.style.marginRight = '0';
+	modal.style.overflow = 'scroll';
+
+	var row = document.createElement('div');
+	row.setAttribute('class', 'row');
+	modal.appendChild(row);
+
+	var column = document.createElement('div');
+	column.setAttribute('class', 'column col-lg-6');
+	column.style.float = 'none';
+	column.style.minHeight = '80%';
+	column.style.marginTop = '64px';
+	column.style.marginLeft = 'auto';
+	column.style.marginRight = 'auto';
+	column.style.marginBottom = '64px';
+	column.style.backgroundColor = 'white';
+	column.style.scrollY = 'auto !important';
+	column.style.overflow = 'scroll';
+	row.appendChild(column);
+
+	document.body.appendChild(modal);
+
+	return { element: modal, show: show, hide: hide, clear: clear, addContent:addContent };
+}
+
 function insertAfter(elem, refElem) {
   return refElem.parentNode.insertBefore(elem, refElem.nextSibling);
 }

@@ -55,6 +55,8 @@ function addTestFairyDeviceFarmIFrame() {
 		return;
 	}
 
+	var modal = injectModal();
+
 	var sectionsParent = document.querySelectorAll("#logs-header")[0].parentElement.parentElement.parentElement.parentElement;
 	var sections = sectionsParent.querySelectorAll(".results-report-section");
 	var foundSections = {
@@ -85,12 +87,12 @@ function addTestFairyDeviceFarmIFrame() {
 			testFilesSection: DOMElement of <ul></ul> of <a></a> elements
 		}
 		*/
-		extractSessionUrl(testCase.testFilesSection, function(sessionUrl) {
+		extractSessionUrl(testCase.testFilesSection, function(sessionUrl, exceptionFound) {
 			var testCanonicalName = testCase.testSuiteName + "." + testCase.testName;
 
 			if (sessionUrl && !alreadyCheckedSessions[testCanonicalName]) {
 				console.error("Session url for " + testCanonicalName + ": " + sessionUrl);
-				addSessionLinkToSection(testCase, sessionUrl);
+				addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound);
 			}
 
 			alreadyCheckedSessions[testCanonicalName] = true;
@@ -208,28 +210,35 @@ function extractSessionUrl(testFilesSection, callback) {
 		}
 
 		var lines = logs.split('\n');
+		var sessionUrl = null;
+		var exceptionFound = false;
 		for (var i = 0; i < lines.length; i++) {
 			var line = lines[i];
 
 			// This line must match with these:
 			// https://github.com/testfairy-blog/TestFairyInstrumentationExamples/blob/master/app/src/androidTest/java/com/testfairy/instrumentation/utils/TestFairyInstrumentationUtil.java#L139
 			// https://github.com/testfairy-blog/TestFairyInstrumentationExamples/blob/master/app/src/androidTest/java/com/testfairy/instrumentation/utils/TestFairyInstrumentationUtil.java#L151
-			var instrumentationUrlLine = 'Instrumentation session url: ';
+			var instrumentationUrlLine = 'Instrumentation session url:';
+			var exceptionLine = 'TestFairy detected an exception:';
 
 			var instrumentationUrlLineIndex = line.indexOf(instrumentationUrlLine);
 			if (instrumentationUrlLineIndex != -1) {
 				// console.error("Found line: " + line);
-				var sessionUrl = line.slice(instrumentationUrlLineIndex + instrumentationUrlLine.length).trim();
-				callback(sessionUrl);
-				return;
+				sessionUrl = line.slice(instrumentationUrlLineIndex + instrumentationUrlLine.length).trim();
+			}
+
+			var exceptionLineIndex = line.indexOf(exceptionLine);
+			if (exceptionLineIndex != -1) {
+				// console.error("Found line: " + line);
+				exceptionFound = true;
 			}
 		}
 
-		callback();
+		callback(sessionUrl, exceptionFound);
 	});
 }
 
-function addSessionLinkToSection(testCase, sessionUrl) {
+function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound) {
 	/*
 	Structure of `testCase`:
 
@@ -243,5 +252,27 @@ function addSessionLinkToSection(testCase, sessionUrl) {
 	console.error("Injecting TestFairy Session url into files section for " + testCanonicalName);
 
 	testCase.testFilesSection.appendChild(createLi(createA("TestFairy Session", sessionUrl)))
-	testCase.testFilesSection.appendChild(createLi(createIFrame(sessionUrl + "?iframe", '100%', 'auto', 'scroll')));
+
+	if (exceptionFound) {
+		var showExceptionA = createA("Show Exception", '');
+		testCase.testFilesSection.appendChild(createLi(showExceptionA));
+
+		showExceptionA.onclick = function(e) {
+			e.preventDefault();
+			modal.show();
+			modal.clear();
+
+			// TODO : Use logThrowable widget in the session url query params
+			var iFrame = createIFrame(sessionUrl + "?iframe", '100%', 'auto', 'scroll !important');
+			modal.addContent(iFrame);
+
+			// TODO : TestFairy iframe document must report hegiht changes when widgets collapse/expand
+
+			modal.element.onclick = function(e) {
+				e.preventDefault();
+				modal.hide();
+				modal.element.onclick = undefined;
+			}
+		}
+	}
 }
