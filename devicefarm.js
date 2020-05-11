@@ -251,9 +251,12 @@ function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound) {
 	var testCanonicalName = testCase.testSuiteName + "." + testCase.testName;
 	console.error("Injecting TestFairy Session url into files section for " + testCanonicalName);
 
-	testCase.testFilesSection.appendChild(createLi(createA("TestFairy Session", sessionUrl)))
+	testCase.testFilesSection.appendChild(createLi(createA("TestFairy Session", sessionUrl)));
 
 	if (exceptionFound) {
+		// TODO : Make stacktrace inline
+		// testCase.testFilesSection.appendChild(createLi(createIFrame(sessionUrl + "?iframe", '100%', 'auto', 'scroll !important')));
+
 		var showExceptionA = createA("Show Exception", '');
 		testCase.testFilesSection.appendChild(createLi(showExceptionA));
 

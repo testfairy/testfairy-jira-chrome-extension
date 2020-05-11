@@ -105,7 +105,7 @@ function injectModal() { // Assumes bootstrap exists
 
 	document.body.appendChild(modal);
 
-	return { element: modal, show: show, hide: hide, clear: clear, addContent:addContent };
+	return { element: modal, show: show, hide: hide, clear: clear, addContent: addContent };
 }
 
 function insertAfter(elem, refElem) {
