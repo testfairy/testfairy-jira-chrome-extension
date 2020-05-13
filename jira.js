@@ -48,7 +48,7 @@ function addTestFairyJiraIFrame() {
 		return false;
 	}
 
-	var parent = createIFrame(url);
+	var parent = createIFrame(url, 'testfairy-iframe', 'TestFairy Information');
 
 	insertAfter(parent, detailsModule);
 	return true;

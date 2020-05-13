@@ -1,14 +1,14 @@
-function createIFrame(url, width, height, overflow) {
+function createIFrame(url, id, headingTitle, width, height, overflow) {
 	var h2 = document.createElement('h2');
 	h2.setAttribute("class", "toggle-title");
-	h2.textContent = "TestFairy information";
+	h2.textContent = headingTitle ? headingTitle : '';
 
 	var heading = document.createElement('div');
 	heading.setAttribute("class", "mod-header");
 	heading.appendChild(h2);
 
 	var iframe = document.createElement('iframe');
-	iframe.setAttribute('id', 'testfairy-iframe');
+	iframe.setAttribute('id', id);
 	iframe.setAttribute('frameborder', '0');
 	iframe.setAttribute('width', width ? width : '100%');
 	iframe.setAttribute('height', height ? height : 'auto');
@@ -24,7 +24,11 @@ function createIFrame(url, width, height, overflow) {
 
 	var parent = document.createElement('div');
 	parent.setAttribute("class", "module toggle-wrap");
-	parent.appendChild(heading);
+
+	if (headingTitle) {
+		parent.appendChild(heading);
+	}
+
 	parent.appendChild(content);
 
 	return parent;
@@ -42,6 +46,13 @@ function createA(text, url) {
 function createLi(child) {
 	var li = document.createElement('li');
 	li.appendChild(child);
+
+	return li;
+}
+
+function createLiWithText(text) {
+	var li = document.createElement('li');
+	li.innerText = text;
 
 	return li;
 }

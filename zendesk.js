@@ -41,7 +41,7 @@ function addTestFairyZendeskIFrame() {
 	url = url + "?iframe";
 
 	var detailsModule = testfairyLink.closest(".comment");
-	var parent = createIFrame(url);
+	var parent = createIFrame(url, 'testfairy-iframe', 'TestFairy Information');
 
 	insertAfter(parent, detailsModule);
 	return true;

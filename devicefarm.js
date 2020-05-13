@@ -2,7 +2,9 @@
 var deviceFarmBusy = 0;
 
 // string set for already checked session, used to avoid injecting html elements twice for a test case
-var alreadyCheckedSessions = {};
+var alreadyCheckedSessions = {
+	__lastLocation: ''
+};
 
 function isDeviceFarmTab() {
 	if (deviceFarmBusy) {
@@ -55,6 +57,12 @@ function addTestFairyDeviceFarmIFrame() {
 		return;
 	}
 
+	if (document.location.href !== alreadyCheckedSessions.__lastLocation) {
+		alreadyCheckedSessions = {
+			__lastLocation: document.location.href
+		};
+	}
+
 	var modal = injectModal();
 
 	var sectionsParent = document.querySelectorAll("#logs-header")[0].parentElement.parentElement.parentElement.parentElement;
@@ -72,9 +80,6 @@ function addTestFairyDeviceFarmIFrame() {
 	});
 
 	var testCases = extractTestCases(foundSections.filesSection);
-
-	// console.error('Test Cases:');
-	// console.error(testCases);
 
 	deviceFarmBusy = testCases.length;
 	testCases.forEach(function(testCase) {
@@ -200,10 +205,7 @@ function extractSessionUrl(testFilesSection, callback) {
 
 	// Fetch and parse logcat to detect session urls
 	httpGetAsync(logcat.href, function(logs) {
-		// console.error("Fetched logcat file");
-
 		if (!logs) {
-			// console.error("Logcat is empty");
 			// if logcat file is empty or unavailable, there is no hope
 			callback();
 			return;
@@ -222,14 +224,12 @@ function extractSessionUrl(testFilesSection, callback) {
 			var exceptionLine = 'TestFairy detected an exception:';
 
 			var instrumentationUrlLineIndex = line.indexOf(instrumentationUrlLine);
-			if (instrumentationUrlLineIndex != -1) {
-				// console.error("Found line: " + line);
+			if (instrumentationUrlLineIndex !== -1) {
 				sessionUrl = line.slice(instrumentationUrlLineIndex + instrumentationUrlLine.length).trim();
 			}
 
 			var exceptionLineIndex = line.indexOf(exceptionLine);
-			if (exceptionLineIndex != -1) {
-				// console.error("Found line: " + line);
+			if (exceptionLineIndex !== -1) {
 				exceptionFound = true;
 			}
 		}
@@ -248,34 +248,38 @@ function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound) {
 		testFilesSection: DOMElement of <ul></ul> of <a></a> elements
 	}
 	*/
-	var testCanonicalName = testCase.testSuiteName + "." + testCase.testName;
-	console.error("Injecting TestFairy Session url into files section for " + testCanonicalName);
+	// sessionUrl = 'https://automatic-tests.testfairy.com/projects/6847056-testfairyinstrumentationexamples/builds/9192125/sessions/4450603638';
 
-	testCase.testFilesSection.appendChild(createLi(createA("TestFairy Session", sessionUrl)));
+	var testCanonicalName = testCase.testSuiteName + "." + testCase.testName;
+	// console.error("Injecting TestFairy Session url into files section for " + testCanonicalName);
+
+	var sessionLink = createA("TestFairy Session", sessionUrl);
+	testCase.testFilesSection.appendChild(createLi(sessionLink));
+
+	// sessionLink.onclick = function(e) {
+	// 	e.preventDefault();
+	// 	modal.show();
+	// 	modal.clear();
+	//
+	// 	var iFrame = createIFrame(sessionUrl + "?iframe", 'testfairy-iframe', 'TestFairy Session', '100%', 'auto', 'scroll !important');
+	// 	modal.addContent(iFrame);
+	//
+	// 	modal.element.onclick = function(e) {
+	// 		e.preventDefault();
+	// 		modal.hide();
+	// 		modal.element.onclick = undefined;
+	// 	};
+	// }
 
 	if (exceptionFound) {
-		// TODO : Make stacktrace inline
-		// testCase.testFilesSection.appendChild(createLi(createIFrame(sessionUrl + "?iframe", '100%', 'auto', 'scroll !important')));
+		var throwablesUrl = sessionUrl + "/minimal?widget=throwables";
+		testCase.testFilesSection.appendChild(createLiWithText('-'));
+		// testCase.testFilesSection.appendChild(createLi(createA('Stacktrace', throwablesUrl)));
+		testCase.testFilesSection.appendChild(createLi(createIFrame(throwablesUrl, null, null, '100%', 'auto', 'scroll !important')));
 
-		var showExceptionA = createA("Show Exception", '');
-		testCase.testFilesSection.appendChild(createLi(showExceptionA));
-
-		showExceptionA.onclick = function(e) {
-			e.preventDefault();
-			modal.show();
-			modal.clear();
-
-			// TODO : Use logThrowable widget in the session url query params
-			var iFrame = createIFrame(sessionUrl + "?iframe", '100%', 'auto', 'scroll !important');
-			modal.addContent(iFrame);
-
-			// TODO : TestFairy iframe document must report hegiht changes when widgets collapse/expand
-
-			modal.element.onclick = function(e) {
-				e.preventDefault();
-				modal.hide();
-				modal.element.onclick = undefined;
-			}
-		}
+		var sectionContainer = testCase.testFilesSection.parentElement.parentElement;
+		sectionContainer.setAttribute('class', sectionContainer.getAttribute('class').replace('large-4', 'large-12'));
+		sectionContainer.setAttribute('class', sectionContainer.getAttribute('class').replace('large-3', 'large-12'));
+		sectionContainer.parentElement.setAttribute('class', sectionContainer.parentElement.getAttribute('class').replace('large-4', 'large-12'));
 	}
 }
