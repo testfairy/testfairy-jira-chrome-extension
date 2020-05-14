@@ -1,5 +1,11 @@
 function isSupported() {
-	return isJiraTab() || isZendeskTab() || isDeviceFarmTab();
+	try {
+		return isJiraTab() || isZendeskTab() || isDeviceFarmTab() || isTrelloTab();
+	} catch(error) {
+		console.error("Error during tab detection:");
+		console.error(error);
+		return false;
+	}
 }
 
 function loadExtension() {
@@ -39,6 +45,10 @@ function addTimer() {
 
 	if (isDeviceFarmTab()) {
 		addTestFairyDeviceFarmIFrame();
+	}
+
+	if (isTrelloTab()) {
+		addTestFairyTrelloIFrame();
 	}
 }
 

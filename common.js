@@ -1,3 +1,7 @@
+function getSessionUrlRegex() {
+	return /^https:\/\/[\w\._-]+\/projects\/(\d+)-[\w-\._]+\/builds\/(\d+)\/sessions\/(\d+).*$/;
+}
+
 function createIFrame(url, id, headingTitle, width, height, overflow) {
 	var h2 = document.createElement('h2');
 	h2.setAttribute("class", "toggle-title");
