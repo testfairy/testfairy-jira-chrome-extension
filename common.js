@@ -1,3 +1,11 @@
+function getTestFairyCommonIFrameId() {
+	return 'testfairy-iframe';
+}
+
+function getTestFairyCommonIFrameSelector() {
+	return '#' + getTestFairyCommonIFrameId();
+}
+
 function getSessionUrlRegex() {
 	return /^https:\/\/[\w\._-]+\/projects\/(\d+)-[\w-\._]+\/builds\/(\d+)\/sessions\/(\d+).*$/;
 }
@@ -61,7 +69,36 @@ function createLiWithText(text) {
 	return li;
 }
 
-function injectModal() { // Assumes bootstrap exists
+function createDiv(cssClass, children) {
+	var div = document.createElement('div');
+	div.setAttribute('class', cssClass);
+
+	if (children && children.forEach) {
+		children.forEach(function(child) {
+			div.appendChild(child);
+		});
+	}
+
+	return div;
+}
+
+function createSpan(cssClass, text) {
+	var span = document.createElement('span');
+	span.setAttribute('class', cssClass);
+	span.innerText = text;
+
+	return span;
+}
+
+function createH3(cssClass, text) {
+	var h3 = document.createElement('h3');
+	h3.setAttribute('class', cssClass);
+	h3.innerText = text;
+
+	return h3;
+}
+
+function injectModal() { // Assumes Twitter Bootstrap exists
 	function show() {
 		document.querySelector('#testfairy-modal').style.display = "block";
 	}

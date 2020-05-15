@@ -1,3 +1,7 @@
+function getTrelloCardDescriptionLinksSelector() {
+	return ".js-fill-card-detail-desc > div > .window-module > .u-gutter > .editable > .description-content > .current > p > a";
+}
+
 function isTrelloTab() {
   var metaTags = document.getElementsByTagName("meta");
 
@@ -15,14 +19,14 @@ function isTrelloTab() {
 
 	var trelloRootFound = !!document.querySelector('#trello-root');
 
-	return iTunesAppFound;
+	return iTunesAppFound && trelloRootFound;
 }
 
 function addTestFairyTrelloIFrame() {
-	var cardDescriptionLinksSelector =
-		".js-fill-card-detail-desc > div > .window-module > .u-gutter > .editable > .description-content > .current > p > a";
-	var links = document.querySelectorAll(cardDescriptionLinksSelector);
+	// Get links in description box
+	var links = document.querySelectorAll(getTrelloCardDescriptionLinksSelector());
 
+	// Search for a session url
 	var sessionUrl = null;
 	for (var i = 0; i < links.length; i++) {
 		var link = links[i]
@@ -32,5 +36,29 @@ function addTestFairyTrelloIFrame() {
 		}
 	}
 
-	console.error(sessionUrl);
+	// Inject iframe if session url is found
+	if (sessionUrl) {
+		// Inject iframe in a Trello friendly container (dressed with css from Trello)
+		var testFairyContainer = createDiv('window-module', [
+			createDiv('window-module-title window-module-title-no-divider card-detail-activity', [
+				createSpan('window-module-title-icon icon-lg icon-activity', ''),
+				createH3('', 'TestFairy')
+			]),
+			createIFrame(sessionUrl + '?iframe', getTestFairyCommonIFrameId())
+		]);
+
+		var descriptionSection = document.querySelector('.js-fill-card-detail-desc');
+		insertAfter(testFairyContainer, descriptionSection);
+
+		// Fix card dimensions to fit iframe
+		var card = document.querySelector('#chrome-container > div.window-overlay > div.window');
+		card.setAttribute('style', 'width: 800px;' + card.getAttribute('style'));
+
+		// Fix card content dimensions to fit iframe
+		var cardContent = document.querySelector('#chrome-container > div.window-overlay > div > div > div > div.window-main-col');
+		var cardContentStyle = cardContent.getAttribute('style');
+		cardContent.setAttribute('style', 'width: 562px;' + (cardContentStyle ? cardContentStyle : ''));
+
+		console.error(testFairyContainer);
+	}
 }
