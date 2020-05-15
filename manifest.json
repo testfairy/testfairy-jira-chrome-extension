@@ -21,8 +21,8 @@
         "jira.js",
         "zendesk.js",
         "devicefarm.js",
-        "background.js",
-        "trello.js"
+        "trello.js",
+        "background.js"
       ]
     }
   ],
