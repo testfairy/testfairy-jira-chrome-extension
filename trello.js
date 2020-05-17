@@ -29,7 +29,7 @@ function addTestFairyTrelloIFrame() {
 	// Search for a session url
 	var sessionUrl = null;
 	for (var i = 0; i < links.length; i++) {
-		var link = links[i]
+		var link = links[i];
 		if (link.href && link.href.search(getSessionUrlRegex()) !== -1) {
 			sessionUrl = link.href;
 			break;
