@@ -13,7 +13,6 @@
   "content_scripts": [
     {
       "matches": [
-        "http://*/*",
         "https://*/*"
       ],
       "js": [
@@ -25,10 +24,5 @@
         "background.js"
       ]
     }
-  ],
-  "applications": {
-    "gecko": {
-      "id": "support@testfairy.com"
-    }
-  }
+  ]
 }
