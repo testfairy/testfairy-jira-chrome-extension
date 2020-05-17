@@ -248,14 +248,13 @@ function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound) {
 		testFilesSection: DOMElement of <ul></ul> of <a></a> elements
 	}
 	*/
-	// sessionUrl = 'https://automatic-tests.testfairy.com/projects/6847056-testfairyinstrumentationexamples/builds/9192125/sessions/4450603638';
-
 	var testCanonicalName = testCase.testSuiteName + "." + testCase.testName;
 	// console.error("Injecting TestFairy Session url into files section for " + testCanonicalName);
 
 	var sessionLink = createA("TestFairy Session", sessionUrl);
 	testCase.testFilesSection.appendChild(createLi(sessionLink));
 
+  // // The code below showcases how to convert a link into a modal popup with iFrame
 	// sessionLink.onclick = function(e) {
 	// 	e.preventDefault();
 	// 	modal.show();

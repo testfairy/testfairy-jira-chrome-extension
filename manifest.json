@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "TestFairy for JIRA",
+  "name": "TestFairy QuickView",
   "description": "",
   "version": "1.5",
   "permissions": [
@@ -21,6 +21,7 @@
         "jira.js",
         "zendesk.js",
         "devicefarm.js",
+        "trello.js",
         "background.js"
       ]
     }

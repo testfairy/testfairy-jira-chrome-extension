@@ -11,7 +11,7 @@ function isJiraTab() {
 }
 
 function addTestFairyJiraIFrame() {
-	// Todo remove debug
+	// TODO : remove debug
 	var a  = document.querySelector("#testfairy-session__testfairy-session-web-panel");
 	if (a != null) {
 		// testfairy jira add-on found
@@ -48,7 +48,7 @@ function addTestFairyJiraIFrame() {
 		return false;
 	}
 
-	var parent = createIFrame(url, 'testfairy-iframe', 'TestFairy Information');
+	var parent = createIFrame(url, getTestFairyCommonIFrameId(), 'TestFairy Information');
 
 	insertAfter(parent, detailsModule);
 	return true;
