@@ -17,8 +17,17 @@
         "https://*/*"
       ],
       "js": [
+        "common.js",
+        "jira.js",
+        "zendesk.js",
+        "devicefarm.js",
         "background.js"
       ]
     }
-  ]
+  ],
+  "applications": {
+    "gecko": {
+      "id": "support@testfairy.com"
+    }
+  }
 }
