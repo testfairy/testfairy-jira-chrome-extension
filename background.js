@@ -32,7 +32,7 @@ function addTimer() {
 	if (isSupported()) {
 		// Try again to see if tab content changed in a way that we can support
 		// i.e Angular loaded, React changed DOM tree, HTLM5 history API changed url without leaving the page etc
-		setTimeout(addTimer, 5000);
+		setTimeout(addTimer, 2000);
 	}
 
 	var testFairyFrame = document.querySelector(getTestFairyCommonIFrameSelector());
