@@ -1,7 +1,7 @@
 function isSupported() {
 	try {
 		return isJiraTab() || isZendeskTab() || isDeviceFarmTab() || isTrelloTab();
-	} catch(error) {
+	} catch (error) {
 		console.error("Error during tab detection:");
 		console.error(error);
 		return false;

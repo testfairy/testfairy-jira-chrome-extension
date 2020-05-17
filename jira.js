@@ -12,7 +12,7 @@ function isJiraTab() {
 
 function addTestFairyJiraIFrame() {
 	// TODO : remove debug
-	var a  = document.querySelector("#testfairy-session__testfairy-session-web-panel");
+	var a = document.querySelector("#testfairy-session__testfairy-session-web-panel");
 	if (a != null) {
 		// testfairy jira add-on found
 		return true;
