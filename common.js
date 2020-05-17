@@ -7,7 +7,7 @@ function getTestFairyCommonIFrameSelector() {
 }
 
 function getSessionUrlRegex() {
-	return /^https:\/\/[\w\._-]+\/projects\/(\d+)-[\w-\._]+\/builds\/(\d+)\/sessions\/(\d+).*$/;
+	return /^https:\/\/[\w\._-]+\/projects\/(\d+)(-[\w-\._]+)?\/builds\/(\d+)\/sessions\/(\d+).*$/;
 }
 
 function createIFrame(url, id, headingTitle, width, height, overflow) {
