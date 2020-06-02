@@ -7,7 +7,7 @@ function getTestFairyCommonIFrameSelector() {
 }
 
 function getSessionUrlRegex() {
-	return /^https:\/\/[\w\._-]+\/projects\/(\d+)-[\w-\._]+\/builds\/(\d+)\/sessions\/(\d+).*$/;
+	return /^https:\/\/[\w\._-]+\/projects\/(\d+)(-[\w-\._]+)?\/builds\/(\d+)\/sessions\/(\d+).*$/;
 }
 
 function convertSessionUrlToIFrameUrl(sessionUrl) {
@@ -93,7 +93,7 @@ function createDiv(cssClass, children) {
 	div.setAttribute('class', cssClass);
 
 	if (children && children.forEach) {
-		children.forEach(function(child) {
+		children.forEach(function (child) {
 			div.appendChild(child);
 		});
 	}
@@ -136,7 +136,7 @@ function injectModal() { // Assumes Twitter Bootstrap exists
 
 	var modal = document.querySelector('#testfairy-modal')
 	if (modal) {
-		return { element: modal, show: show, hide: hide, clear: clear, addContent:addContent };
+		return {element: modal, show: show, hide: hide, clear: clear, addContent: addContent};
 	}
 
 	modal = document.createElement('div');
@@ -176,23 +176,23 @@ function injectModal() { // Assumes Twitter Bootstrap exists
 
 	document.body.appendChild(modal);
 
-	return { element: modal, show: show, hide: hide, clear: clear, addContent: addContent };
+	return {element: modal, show: show, hide: hide, clear: clear, addContent: addContent};
 }
 
 function insertAfter(elem, refElem) {
-  return refElem.parentNode.insertBefore(elem, refElem.nextSibling);
+	return refElem.parentNode.insertBefore(elem, refElem.nextSibling);
 }
 
 function httpGetAsync(theUrl, callback) {
-  var xmlHttp = new XMLHttpRequest();
-	xmlHttp.onreadystatechange = function() {
-    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-      callback(xmlHttp.responseText.toString());
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function () {
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+			callback(xmlHttp.responseText.toString());
 		} else if (xmlHttp.readyState == 4) {
 			callback();
 		}
-  }
+	}
 
-  xmlHttp.open("GET", theUrl, true); // true for asynchronous
-  xmlHttp.send(null);
+	xmlHttp.open("GET", theUrl, true); // true for asynchronous
+	xmlHttp.send(null);
 }

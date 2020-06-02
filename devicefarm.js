@@ -71,7 +71,7 @@ function addTestFairyDeviceFarmIFrame() {
 		logsSection: logsHeader.parentElement
 	};
 
-	sections.forEach(function(section) {
+	sections.forEach(function (section) {
 		switch (section.getAttribute('ui-view')) {
 			case 'report-files':
 				foundSections.filesSection = section;
@@ -82,7 +82,7 @@ function addTestFairyDeviceFarmIFrame() {
 	var testCases = extractTestCases(foundSections.filesSection);
 
 	deviceFarmBusy = testCases.length;
-	testCases.forEach(function(testCase) {
+	testCases.forEach(function (testCase) {
 		/*
 		Structure of `testCase`:
 
@@ -92,7 +92,7 @@ function addTestFairyDeviceFarmIFrame() {
 			testFilesSection: DOMElement of <ul></ul> of <a></a> elements
 		}
 		*/
-		extractSessionUrl(testCase.testFilesSection, function(sessionUrl, exceptionFound) {
+		extractSessionUrl(testCase.testFilesSection, function (sessionUrl, exceptionFound) {
 			var testCanonicalName = testCase.testSuiteName + "." + testCase.testName;
 
 			if (sessionUrl && !alreadyCheckedSessions[testCanonicalName]) {
@@ -116,7 +116,7 @@ function extractTestCases(filesSection) {
 	var testCases = [];
 	var testCaseSections = filesSection.querySelectorAll('.adf-card > div');
 
-	testCaseSections.forEach(function(section) {
+	testCaseSections.forEach(function (section) {
 		// Device Farm has 3 types of details pages:
 		//
 		// 1. Instrumentation page (has links to test suites)
@@ -182,9 +182,9 @@ function extractSessionUrl(testFilesSection, callback) {
 	}
 
 	var logcat = Array.prototype.slice.call(testFilesSection.querySelectorAll('li > a'))
-	  .filter(function (a) {
-	    return a.textContent === 'Logcat';
-	  })[0];
+		.filter(function (a) {
+			return a.textContent === 'Logcat';
+		})[0];
 
 	if (!logcat) {
 		// if device farm didn't record logcat, we can't do anything
@@ -193,9 +193,9 @@ function extractSessionUrl(testFilesSection, callback) {
 	}
 
 	var testFairySession = Array.prototype.slice.call(testFilesSection.querySelectorAll('li > a'))
-	  .filter(function (a) {
-	    return a.textContent === 'TestFairy Session';
-	  })[0];
+		.filter(function (a) {
+			return a.textContent === 'TestFairy Session';
+		})[0];
 
 	if (testFairySession) {
 		// if we already injected a <a>TestFairy Session</a>, we can skip
@@ -204,7 +204,7 @@ function extractSessionUrl(testFilesSection, callback) {
 	}
 
 	// Fetch and parse logcat to detect session urls
-	httpGetAsync(logcat.href, function(logs) {
+	httpGetAsync(logcat.href, function (logs) {
 		if (!logs) {
 			// if logcat file is empty or unavailable, there is no hope
 			callback();
@@ -254,7 +254,7 @@ function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound) {
 	var sessionLink = createA("TestFairy Session", sessionUrl);
 	testCase.testFilesSection.appendChild(createLi(sessionLink));
 
-  // // The code below showcases how to convert a link into a modal popup with iFrame
+	// // The code below showcases how to convert a link into a modal popup with iFrame
 	// sessionLink.onclick = function(e) {
 	// 	e.preventDefault();
 	// 	modal.show();

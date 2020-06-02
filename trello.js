@@ -3,10 +3,10 @@ function getTrelloCardDescriptionLinksSelector() {
 }
 
 function isTrelloTab() {
-  var metaTags = document.getElementsByTagName("meta");
+	var metaTags = document.getElementsByTagName("meta");
 
-  // <meta name="apple-itunes-app" content="app-id=461504587, app-argument=https://trello.com/">
-  var iTunesAppFound = false;
+	// <meta name="apple-itunes-app" content="app-id=461504587, app-argument=https://trello.com/">
+	var iTunesAppFound = false;
 
 	for (var i = 0; i < metaTags.length; i++) {
 		if (
@@ -29,7 +29,7 @@ function addTestFairyTrelloIFrame() {
 	// Search for a session url
 	var sessionUrl = null;
 	for (var i = 0; i < links.length; i++) {
-		var link = links[i]
+		var link = links[i];
 		if (link.href && link.href.search(getSessionUrlRegex()) !== -1) {
 			sessionUrl = convertSessionUrlToIFrameUrl(link.href);
 			break;

@@ -1,10 +1,13 @@
-# TestFairy Chrome extenstion for JIRA
+# TestFairy Chrome/Firefox extenstion
 
-## Installation:
+#### Installation:
 
-1. Visit the [Atlassian Marketplace](https://marketplace.atlassian.com/plugins/com.testfairy.jira.chrome/cloud/overview)
-2. Click on "Get It Now" and choose your installation.
+1. Visit https://chrome.google.com/webstore/detail/testfairy-for-jira/joaafaemekbkgekhjbaldlllcnjifcee?hl=en` and follow on-screen instructions.
 
-No admin priviliges required.
+#### Development
+
+1. Git clone this repository
+2. In Chrome, open Extensions, and select Load Unpacked. Point the directory selector dialog to your git cloned repo, and you're done.
+
 
 

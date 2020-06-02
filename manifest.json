@@ -2,18 +2,24 @@
   "manifest_version": 2,
 
   "name": "TestFairy QuickView",
-  "description": "",
-  "version": "1.5",
+  "author": "TestFairy",
+  "description": "This extension enchances bug systems and crm systems to preview TestFairy Sessions",
+  "version": "1.7",
   "permissions": [
     "activeTab"
   ],
-   "browser_action": {
+  "update_url": "https://clients2.google.com/service/update2/crx",
+  "browser_action": {
     "default_icon": "testfairy.ico"
+  },
+  "icons": {
+    "16": "images/icon-16.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
   },
   "content_scripts": [
     {
       "matches": [
-        "http://*/*",
         "https://*/*"
       ],
       "js": [
@@ -25,10 +31,5 @@
         "background.js"
       ]
     }
-  ],
-  "applications": {
-    "gecko": {
-      "id": "support@testfairy.com"
-    }
-  }
+  ]
 }
