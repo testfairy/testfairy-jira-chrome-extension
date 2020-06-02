@@ -1,0 +1,5 @@
+#!/bin/bash
+
+stashName=`git stash create`
+git archive -o $1 $stashName
+git stash pop &
