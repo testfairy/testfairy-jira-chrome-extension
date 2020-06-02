@@ -24,6 +24,6 @@ jobs:
           scope: '@octocat'
       - run: node build
       - uses: AButler/upload-release-assets@v2.0
-          with:
-            files: '*.zip;*.xpi'
-            repo-token: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: '*.zip;*.xpi'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
