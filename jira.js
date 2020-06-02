@@ -28,16 +28,11 @@ function addTestFairyJiraIFrame() {
 		return false;
 	}
 
-	var url = testfairyDescriptionBlock.getAttribute("href");
-	if (!url.includes("projects") || !url.includes("builds") || !url.includes("sessions")) {
+	var url = convertSessionUrlToIFrameUrl(testfairyDescriptionBlock.getAttribute("href"));
+
+	if (!url) {
 		return false;
 	}
-
-	if (url.includes('#')) {
-		url = url.substring(0, url.indexOf('#'));
-	}
-
-	url = url + "?iframe";
 
 	// Works for JIRA servers
 	var detailsModule = document.querySelector("#details-module");

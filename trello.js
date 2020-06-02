@@ -31,7 +31,7 @@ function addTestFairyTrelloIFrame() {
 	for (var i = 0; i < links.length; i++) {
 		var link = links[i]
 		if (link.href && link.href.search(getSessionUrlRegex()) !== -1) {
-			sessionUrl = link.href;
+			sessionUrl = convertSessionUrlToIFrameUrl(link.href);
 			break;
 		}
 	}
@@ -44,7 +44,7 @@ function addTestFairyTrelloIFrame() {
 				createSpan('window-module-title-icon icon-lg icon-activity', ''),
 				createH3('', 'TestFairy')
 			]),
-			createIFrame(sessionUrl + '?iframe', getTestFairyCommonIFrameId())
+			createIFrame(sessionUrl, getTestFairyCommonIFrameId())
 		]);
 
 		var descriptionSection = document.querySelector('.js-fill-card-detail-desc');

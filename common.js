@@ -10,6 +10,25 @@ function getSessionUrlRegex() {
 	return /^https:\/\/[\w\._-]+\/projects\/(\d+)-[\w-\._]+\/builds\/(\d+)\/sessions\/(\d+).*$/;
 }
 
+function convertSessionUrlToIFrameUrl(sessionUrl) {
+	if (!sessionUrl.includes("projects") || !sessionUrl.includes("builds") || !sessionUrl.includes("sessions")) {
+		return false;
+	}
+
+	if (sessionUrl.includes('?iframe')) {
+		return sessionUrl;
+	}
+
+	var hash = "";
+	var base = sessionUrl;
+	if (sessionUrl.includes('#')) {
+		hash = sessionUrl.substring(sessionUrl.indexOf('#'));
+		base = sessionUrl.substring(0, sessionUrl.indexOf('#'));
+	}
+
+	return base + "?iframe" + hash;
+}
+
 function createIFrame(url, id, headingTitle, width, height, overflow) {
 	var h2 = document.createElement('h2');
 	h2.setAttribute("class", "toggle-title");
