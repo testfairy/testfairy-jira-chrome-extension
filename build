@@ -27,7 +27,7 @@ try {
   fs.unlinkSync("manifest.json");
 
   fs.writeFileSync("manifest.json", JSON.stringify(firefoxManifest, null, 2), 'utf8');
-  child_process.execSync("./zip firefox.zip");
+  child_process.execSync("./zip firefox.xpi");
   fs.unlinkSync("manifest.json");
 } finally {
   try {

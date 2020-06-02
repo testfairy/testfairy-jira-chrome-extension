@@ -1,5 +1,5 @@
 .DS_Store
 .idea
-chrome.zip
-firefox.zip
+*.zip
+*.xpi
 manifest-base.json
