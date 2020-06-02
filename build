@@ -29,10 +29,14 @@ try {
   fs.writeFileSync("manifest.json", JSON.stringify(firefoxManifest, null, 2), 'utf8');
   child_process.execSync("./zip firefox.xpi");
   fs.unlinkSync("manifest.json");
+
+  process.exit(0);
 } finally {
   try {
     fs.unlinkSync("manifest.json");
   } catch(err) {}
 
   child_process.execSync("mv manifest-base.json manifest.json");
+
+  process.exit(1);
 }
