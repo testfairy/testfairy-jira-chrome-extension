@@ -271,7 +271,7 @@ function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound) {
 	// }
 
 	if (exceptionFound) {
-		var throwablesUrl = sessionUrl + "/minimal?widget=throwables";
+		var throwablesUrl = sessionUrl + "/minimal?widget=throwables&ui=true";
 		testCase.testFilesSection.appendChild(createLiWithText('-'));
 		// testCase.testFilesSection.appendChild(createLi(createA('Stacktrace', throwablesUrl)));
 		testCase.testFilesSection.appendChild(createLi(createIFrame(throwablesUrl, null, null, '100%', 'auto', 'scroll !important')));
