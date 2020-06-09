@@ -1,0 +1,29 @@
+name: Node.js Release CI
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      # Setup .npmrc file to publish to GitHub Packages
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+          registry-url: 'https://npm.pkg.github.com'
+          # Defaults to the user or organization that owns the workflow file
+          scope: '@octocat'
+      - run: node build
+      - uses: AButler/upload-release-assets@v2.0
+        with:
+          files: '*.zip;*.xpi'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

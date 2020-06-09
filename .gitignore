@@ -1,2 +1,5 @@
 .DS_Store
 .idea
+*.zip
+*.xpi
+manifest-base.json
