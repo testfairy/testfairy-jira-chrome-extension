@@ -22,7 +22,7 @@ function loadExtension() {
 
 function receiveMessage(event) {
 	var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
-	if (event.data.height) {
+	if (event.data.height && document.getElementById(getTestFairyCommonIFrameId())) {
 		// TODO : Do this for all kinds of TestFairy iframes when it becomes necessary
 		document.getElementById(getTestFairyCommonIFrameId()).height = (event.data.height) + "px";
 	}
