@@ -1,6 +1,6 @@
 function isSupported() {
 	try {
-		return isJiraTab() || isZendeskTab() || isDeviceFarmTab() || isTrelloTab();
+		return isJiraTab() || isZendeskTab() || isDeviceFarmTab() || isTrelloTab() || isIntercomTab();
 	} catch (error) {
 		console.error("Error during tab detection:");
 		console.error(error);
@@ -22,9 +22,19 @@ function loadExtension() {
 
 function receiveMessage(event) {
 	var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
-	if (event.data.height && document.getElementById(getTestFairyCommonIFrameId())) {
-		// TODO : Do this for all kinds of TestFairy iframes when it becomes necessary
-		document.getElementById(getTestFairyCommonIFrameId()).height = (event.data.height) + "px";
+	if (event.data.height) {
+		var height = (event.data.height) + "px";
+		var elementById = document.getElementById(getTestFairyCommonIFrameId());
+		if (elementById) {
+			elementById.height = height;
+		}
+
+		var elementByClass = document.querySelectorAll("." + getTestFairyCommonIFrameId());
+		if (elementByClass.length > 0) {
+			elementByClass.forEach(element => {
+				element.height = height;
+			});
+		}
 	}
 }
 
@@ -56,6 +66,10 @@ function addTimer() {
 
 	if (isTrelloTab()) {
 		addTestFairyTrelloIFrame();
+	}
+
+	if (isIntercomTab()) {
+		addIntercomIFrame();
 	}
 }
 

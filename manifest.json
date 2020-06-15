@@ -3,7 +3,7 @@
   "name": "TestFairy QuickView",
   "author": "TestFairy",
   "description": "This extension enchances bug systems and crm systems to preview TestFairy Sessions",
-  "version": "1.8",
+  "version": "1.9",
   "permissions": [
     "activeTab"
   ],
@@ -27,6 +27,7 @@
         "zendesk.js",
         "devicefarm.js",
         "trello.js",
+        "intercom.js",
         "background.js"
       ]
     }

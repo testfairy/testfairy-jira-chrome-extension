@@ -29,7 +29,7 @@ function convertSessionUrlToIFrameUrl(sessionUrl) {
 	return base + "?iframe" + hash;
 }
 
-function createIFrame(url, id, headingTitle, width, height, overflow) {
+function createIFrame(url, id, headingTitle, width, height, overflow, className) {
 	var h2 = document.createElement('h2');
 	h2.setAttribute("class", "toggle-title");
 	h2.textContent = headingTitle ? headingTitle : '';
@@ -39,7 +39,13 @@ function createIFrame(url, id, headingTitle, width, height, overflow) {
 	heading.appendChild(h2);
 
 	var iframe = document.createElement('iframe');
-	iframe.setAttribute('id', id);
+	if (id) {
+		iframe.setAttribute('id', id);
+	}
+	if (className) {
+		iframe.classList.add(className);
+	}
+
 	iframe.setAttribute('frameborder', '0');
 	iframe.setAttribute('width', width ? width : '100%');
 	iframe.setAttribute('height', height ? height : 'auto');
