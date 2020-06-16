@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "TestFairy QuickView",
   "author": "TestFairy",
-  "description": "This extension enchances bug systems and crm systems to preview TestFairy Sessions",
+  "description": "This extension enhances bug systems and crm systems to preview TestFairy Sessions",
   "version": "1.10",
   "permissions": [
     "activeTab"
