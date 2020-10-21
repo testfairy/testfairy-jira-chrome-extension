@@ -10,7 +10,7 @@ function getSessionUrlRegex() {
 	return /^https:\/\/[\w\._-]+\/projects\/(\d+)(-[\w-\._]+)?\/builds\/(\d+)\/sessions\/(\d+).*$/;
 }
 
-function convertSessionUrlToIFrameUrl(sessionUrl) {
+function convertSessionUrlToIFrameUrl(sessionUrl, injectedQueryParams) {
 	if (!sessionUrl.includes("projects") || !sessionUrl.includes("builds") || !sessionUrl.includes("sessions")) {
 		return false;
 	}
@@ -26,7 +26,11 @@ function convertSessionUrlToIFrameUrl(sessionUrl) {
 		base = sessionUrl.substring(0, sessionUrl.indexOf('#'));
 	}
 
-	return base + "?iframe" + hash;
+	if (injectedQueryParams) {
+		return base + "?iframe=1&" + injectedQueryParams + hash;
+	} else {
+		return base + "?iframe" + hash;
+	}
 }
 
 function createIFrame(url, id, headingTitle, width, height, overflow, className) {
@@ -201,4 +205,8 @@ function httpGetAsync(theUrl, callback) {
 
 	xmlHttp.open("GET", theUrl, true); // true for asynchronous
 	xmlHttp.send(null);
+}
+
+function isHex(num) {
+  return Boolean(num.match(/^(0x)?[0-9a-f]+$/i));
 }

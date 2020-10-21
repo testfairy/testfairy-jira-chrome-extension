@@ -29,7 +29,7 @@ function addIntercomIFrame() {
 				continue;
 			}
 
-			sessionUrl = convertSessionUrlToIFrameUrl(link.href);
+			sessionUrl = convertSessionUrlToIFrameUrl(link.href, 'source=intercom');
 			element = link;
 			break;
 		}
