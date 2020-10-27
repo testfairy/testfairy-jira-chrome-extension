@@ -1,6 +1,6 @@
 function isSupported() {
 	try {
-		return isJiraTab() || isZendeskTab() || isDeviceFarmTab() || isTrelloTab() || isIntercomTab();
+		return isJiraTab() || isZendeskTab() || isDeviceFarmTab() || isTrelloTab() || isIntercomTab() || isSauceLabsTab();
 	} catch (error) {
 		console.error("Error during tab detection:");
 		console.error(error);
@@ -46,8 +46,8 @@ function addTimer() {
 	}
 
 	var testFairyFrame = document.querySelector(getTestFairyCommonIFrameSelector());
-	if ((isJiraTab() || isZendeskTab() || isTrelloTab()) && testFairyFrame) {
-		// No need to load extension twice for Jira, Zendesk and Trello if iframe already exists
+	if ((isJiraTab() || isZendeskTab() || isTrelloTab() || isSauceLabsTab()) && testFairyFrame) {
+		// No need to load extension twice for Jira, Zendesk, Trello and Sauce Labs if iframe already exists
 		// Device farm uses multiple iframes without any specific id, thus must be processed always
 		return;
 	}
@@ -70,6 +70,10 @@ function addTimer() {
 
 	if (isIntercomTab()) {
 		addIntercomIFrame();
+	}
+
+	if (isSauceLabsTab()) {
+		addSauceLabsIFrame();
 	}
 }
 

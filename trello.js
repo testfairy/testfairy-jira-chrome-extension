@@ -31,7 +31,7 @@ function addTestFairyTrelloIFrame() {
 	for (var i = 0; i < links.length; i++) {
 		var link = links[i];
 		if (link.href && link.href.search(getSessionUrlRegex()) !== -1) {
-			sessionUrl = convertSessionUrlToIFrameUrl(link.href);
+			sessionUrl = convertSessionUrlToIFrameUrl(link.href, 'source=trello');
 			break;
 		}
 	}

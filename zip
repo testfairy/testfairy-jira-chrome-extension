@@ -1,5 +1,11 @@
 #!/bin/bash
 
+touch "___dev" # workaround to make stash always work
 stashName=`git stash create`
-git archive -o $1 $stashName
-git stash pop &
+echo "Creating $1"
+git archive -o $1 $stashName > /dev/null
+git stash pop > /dev/null &
+rm ___dev
+zip --delete $1 ".github/*" > /dev/null || echo
+zip --delete $1 ".DS_Store" > /dev/null || echo
+echo "Done!"

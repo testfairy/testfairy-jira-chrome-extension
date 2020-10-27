@@ -28,7 +28,7 @@ function addTestFairyJiraIFrame() {
 		return false;
 	}
 
-	var url = convertSessionUrlToIFrameUrl(testfairyDescriptionBlock.getAttribute("href"));
+	var url = convertSessionUrlToIFrameUrl(testfairyDescriptionBlock.getAttribute("href"), 'source=jira');
 
 	if (!url) {
 		return false;

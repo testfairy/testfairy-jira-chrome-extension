@@ -28,6 +28,7 @@
         "devicefarm.js",
         "trello.js",
         "intercom.js",
+        "saucelabs.js",
         "background.js"
       ]
     }

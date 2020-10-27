@@ -226,7 +226,7 @@ function extractSessionUrl(testFilesSection, callback) {
 			var instrumentationUrlLineIndex = line.indexOf(instrumentationUrlLine);
 			if (instrumentationUrlLineIndex !== -1) {
 				sessionUrl = line.slice(instrumentationUrlLineIndex + instrumentationUrlLine.length).trim();
-			}
+			} // TODO : else should look for a session url regex, preferable sent by the native SDK
 
 			var exceptionLineIndex = line.indexOf(exceptionLine);
 			if (exceptionLineIndex !== -1) {
@@ -271,7 +271,7 @@ function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound) {
 	// }
 
 	if (exceptionFound) {
-		var throwablesUrl = sessionUrl + "/minimal?widget=throwables&ui=true";
+		var throwablesUrl = sessionUrl + "/minimal?source=devicefarm&widget=throwables&ui=true";
 		testCase.testFilesSection.appendChild(createLiWithText('-'));
 		// testCase.testFilesSection.appendChild(createLi(createA('Stacktrace', throwablesUrl)));
 		testCase.testFilesSection.appendChild(createLi(createIFrame(throwablesUrl, null, null, '100%', '700', 'scroll !important')));
