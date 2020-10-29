@@ -92,12 +92,12 @@ function addTestFairyDeviceFarmIFrame() {
 			testFilesSection: DOMElement of <ul></ul> of <a></a> elements
 		}
 		*/
-		extractSessionUrl(testCase.testFilesSection, function (sessionUrl, exceptionFound) {
+		extractSessionUrl(testCase.testFilesSection, function (sessionUrl, exceptionFound, minimal) {
 			var testCanonicalName = testCase.testSuiteName + "." + testCase.testName;
 
 			if (sessionUrl && !alreadyCheckedSessions[testCanonicalName]) {
 				console.error("Session url for " + testCanonicalName + ": " + sessionUrl);
-				addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound);
+				addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound, minimal);
 			}
 
 			alreadyCheckedSessions[testCanonicalName] = true;
@@ -135,6 +135,9 @@ function extractTestCases(filesSection) {
 		for (var i = 0; i < testNameHeader.length; i++) {
 			var name = testNameHeader[i];
 			var files = testFiles[i];
+
+			// console.error("Name:");
+			// console.error(name);
 
 			/*
 			Structure of `testCase`:
@@ -186,6 +189,9 @@ function extractSessionUrl(testFilesSection, callback) {
 			return a.textContent === 'Logcat';
 		})[0];
 
+	// console.error("Logcat: ");
+	// console.error(logcat);
+
 	if (!logcat) {
 		// if device farm didn't record logcat, we can't do anything
 		callback();
@@ -211,9 +217,14 @@ function extractSessionUrl(testFilesSection, callback) {
 			return;
 		}
 
+		// console.error("Logs:");
+		// console.error(logs.slice(0, 25) + "...");
+
 		var lines = logs.split('\n');
 		var sessionUrl = null;
 		var exceptionFound = false;
+		var minimal = true;
+
 		for (var i = 0; i < lines.length; i++) {
 			var line = lines[i];
 
@@ -226,7 +237,20 @@ function extractSessionUrl(testFilesSection, callback) {
 			var instrumentationUrlLineIndex = line.indexOf(instrumentationUrlLine);
 			if (instrumentationUrlLineIndex !== -1) {
 				sessionUrl = line.slice(instrumentationUrlLineIndex + instrumentationUrlLine.length).trim();
-			} // TODO : else should look for a session url regex, preferable sent by the native SDK
+			} else {
+				var testFairySessionReponseIndex = line.search("TESTFAIRYSDK: Received: ");
+
+				if (testFairySessionReponseIndex !== -1) {
+					try {
+						var sessionResponse = JSON.parse(line.slice(testFairySessionReponseIndex + 23));
+						if (sessionResponse) {
+							sessionUrl = sessionResponse.sessionUrl;
+							minimal = false;
+							break;
+						}
+					} catch(_) {}
+				}
+			}
 
 			var exceptionLineIndex = line.indexOf(exceptionLine);
 			if (exceptionLineIndex !== -1) {
@@ -234,11 +258,11 @@ function extractSessionUrl(testFilesSection, callback) {
 			}
 		}
 
-		callback(sessionUrl, exceptionFound);
+		callback(sessionUrl, exceptionFound, minimal);
 	});
 }
 
-function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound) {
+function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound, minimal) {
 	/*
 	Structure of `testCase`:
 
@@ -270,11 +294,15 @@ function addSessionLinkToSection(modal, testCase, sessionUrl, exceptionFound) {
 	// 	};
 	// }
 
-	if (exceptionFound) {
-		var throwablesUrl = sessionUrl + "/minimal?source=devicefarm&widget=throwables&ui=true";
+	var throwablesUrl = sessionUrl + "/minimal?source=devicefarm&widget=throwables&ui=true";
+	if (!minimal) {
+		throwablesUrl = convertSessionUrlToIFrameUrl(sessionUrl, "source=devicefarm");
+	}
+
+	if (exceptionFound || !minimal) {
 		testCase.testFilesSection.appendChild(createLiWithText('-'));
 		// testCase.testFilesSection.appendChild(createLi(createA('Stacktrace', throwablesUrl)));
-		testCase.testFilesSection.appendChild(createLi(createIFrame(throwablesUrl, null, null, '100%', '700', 'scroll !important')));
+		testCase.testFilesSection.appendChild(createLi(createIFrame(throwablesUrl, !minimal ? getTestFairyCommonIFrameId() : null, null, '100%', '700', 'scroll !important')));
 
 		var sectionContainer = testCase.testFilesSection.parentElement.parentElement;
 		sectionContainer.setAttribute('class', sectionContainer.getAttribute('class').replace('large-4', 'large-12'));
