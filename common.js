@@ -193,14 +193,22 @@ function insertAfter(elem, refElem) {
 	return refElem.parentNode.insertBefore(elem, refElem.nextSibling);
 }
 
-function httpGetAsync(theUrl, callback) {
+function httpGetAsync(theUrl, callback, isBlobResponse) {
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function () {
 		if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-			callback(xmlHttp.responseText.toString());
+			if (isBlobResponse) {
+				callback(xmlHttp.response);
+			} else {
+				callback(xmlHttp.responseText.toString());
+			}
 		} else if (xmlHttp.readyState == 4) {
 			callback();
 		}
+	}
+
+	if (isBlobResponse) {
+		xmlHttp.responseType = "blob";
 	}
 
 	xmlHttp.open("GET", theUrl, true); // true for asynchronous

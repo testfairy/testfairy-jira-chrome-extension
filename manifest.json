@@ -22,6 +22,7 @@
         "https://*/*"
       ],
       "js": [
+        "jszip.min.js",
         "common.js",
         "jira.js",
         "zendesk.js",
@@ -29,6 +30,7 @@
         "trello.js",
         "intercom.js",
         "saucelabs.js",
+        "perfecto.js",
         "background.js"
       ]
     }
