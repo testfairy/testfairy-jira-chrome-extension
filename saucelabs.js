@@ -145,7 +145,7 @@ function addSauceLabsIFrame() {
 function proceedToDeviceSelection() {
 	var livePageFound = window.location.pathname === '/live/app-testing';
 
-	if (appToProceed || livePageFound) {
+	if (appToProceed && livePageFound && sauceLabsBusy === 0) {
 		sauceLabsBusy++;
 
 		const appGroupIdElement = [...document.querySelectorAll('span')].filter(div => div.innerHTML === appToProceed)[0];
