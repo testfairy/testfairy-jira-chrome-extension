@@ -152,6 +152,7 @@ function proceedToDeviceSelection() {
 		if (appGroupIdElement) {
 			const rowParent = appGroupIdElement.parentNode.parentNode.parentNode.parentNode;
 			[...rowParent.querySelectorAll('span')].filter(div => div.innerHTML === 'Choose device')[0].click()
+			appToProceed = null;
 		}
 
 		setTimeout(function() {
