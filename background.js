@@ -87,6 +87,7 @@ function addTimer() {
 
 	if (isSauceLabsTab()) {
 		addSauceLabsIFrame();
+		proceedToDeviceSelection();
 	}
 
 	if (isPerfectoTab()) {

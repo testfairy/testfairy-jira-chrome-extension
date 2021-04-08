@@ -1,5 +1,6 @@
 // atomic counter for pending ajax calls, used to block periodic timer for extension racing with existing uncomplete processing
 var sauceLabsBusy = 0;
+var appToProceed = null;
 
 function getCommandsTabSelector() {
 	return "#test-details-appium-nav-tab-commands";
@@ -50,11 +51,22 @@ function isSauceLabsTab() {
 	}
 
 	var testPageFound = isHex(getSauceLabsTestId());
+	var livePageFound = window.location.pathname === '/live/app-testing';
 
-	return saucelabsCdnFound && testPageFound;
+	const params = new URLSearchParams(window. location. search);
+	if (params.has('tfApp')) {
+		appToProceed = params.get('tfApp');
+	}
+
+	return saucelabsCdnFound && (testPageFound || livePageFound);
 }
 
 function addSauceLabsIFrame() {
+	var testPageFound = isHex(getSauceLabsTestId());
+	if (!testPageFound) {
+		return;
+	}
+
 	if (sauceLabsBusy === 0) {
 		if (!document.querySelector(getViewLogsTabSelector())) {
 			return;
@@ -127,5 +139,24 @@ function addSauceLabsIFrame() {
 				}, 5000); // Fix layout after a safe enough delay
 			}
 		}
+	}
+}
+
+function proceedToDeviceSelection() {
+	var livePageFound = window.location.pathname === '/live/app-testing';
+
+	if (appToProceed && livePageFound && sauceLabsBusy === 0) {
+		sauceLabsBusy++;
+
+		const appGroupIdElement = [...document.querySelectorAll('span')].filter(div => div.innerHTML === appToProceed)[0];
+		if (appGroupIdElement) {
+			const rowParent = appGroupIdElement.parentNode.parentNode.parentNode.parentNode;
+			[...rowParent.querySelectorAll('span')].filter(div => div.innerHTML === 'Choose device')[0].click()
+			appToProceed = null;
+		}
+
+		setTimeout(function() {
+			sauceLabsBusy = 0;
+		}, 1000);
 	}
 }
