@@ -3,7 +3,7 @@
   "name": "TestFairy QuickView",
   "author": "TestFairy",
   "description": "This extension enhances bug systems and crm systems to preview TestFairy Sessions",
-  "version": "1.14",
+  "version": "1.14.0",
   "permissions": [],
   "update_url": "https://clients2.google.com/service/update2/crx",
   "browser_action": {
